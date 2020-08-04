@@ -1,15 +1,10 @@
 from hueLights import *
 from const import *
 from exceptions import *
-from pytube import YouTube
-from youtube_search import YoutubeSearch
-from moviepy.editor import *
-from pathvalidate import sanitize_filename
 import os
 import credenziali as cr
 import speech_recognition as sr
-import pygame.mixer_music
-
+import music
 
 def login(auth_state, key):
     #Defining the audio source
@@ -71,40 +66,6 @@ def login(auth_state, key):
         print('Login eseguito con successo. Benvenuto ' + username)
 
     return auth_state
-
-def play(song):
-
-    #Search on youtube and pick first result
-    result = YoutubeSearch(song, max_results=1).to_dict()
-
-    #Get the link
-    link = 'https://www.youtube.com' + result[0].get('url_suffix')
-
-    #Get the video object
-    yt = YouTube(link)
-
-    #Select the quality and type of video
-    stream = yt.streams.filter().first()
-
-    #Download the video
-    stream.download()
-
-    #Select path
-    path = str(stream.default_filename)
-
-    #Wait for download
-    while not os.path.isfile(path):
-        pass
-
-    #Convert the video
-    video = VideoFileClip(path)
-    path_mp3 = path.rstrip("4")
-    path_mp3 += "3"
-    video.audio.write_audiofile(path_mp3)
-
-    #Load and play the song
-    pygame.mixer_music.load(path_mp3)
-    pygame.mixer_music.play()
 
 def elaborate(text, auth_state, key):
     #Set variables
