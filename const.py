@@ -1,11 +1,11 @@
 name = "test"
 
 #Lights
-turn_off = ["disattiva il sistema", "spegni il sistema", "spegniti", "vai a dormire", "ritorna nella pokeball"]
-turn_on_light = ["accendi la luce", "accendi luce", "accendi la lampadina", "accendi il lampadario"]
+turn_on_light_room = ["accendi la luce", "accendi luce", "accendi stanza", "accendi la luce nella stanza"]
 
 #Chat
 call_assistant = ["ehi " + name, "ciao " + name, "buongiorno " + name, name, "ok " + name, "buonasera " + name, "buon pomeriggio " + name]
+turn_off = ["disattiva il sistema", "spegni il sistema", "spegniti", "vai a dormire", "ritorna nella pokeball"]
 hello = ["ciao"]
 cancel = ["annulla", "non importa", "no", "scherzavo"]
 

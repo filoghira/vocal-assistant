@@ -1,32 +1,37 @@
 from phue import Bridge
-from hueLights_const import *
 import time
 
+#Bridge ip address
+bridge_ip_address = '192.168.1.9'
 
-def access_lights(bridge_ip):
-    b = Bridge(bridge_ip)
-    light_names_list = b.get_light_objects('name')
-    return light_names_list
+def access_lights():
+    #Get bridge object
+    b = Bridge(bridge_ip_address)
+    #Get lights list
+    light_list = b.get_light_objects('id')
 
+    return light_list
 
-def film_lights():
-    lights = access_lights(bridge_ip_address)
+def turn_on_room(room):
+    #Get bridge object
+    b = Bridge(bridge_ip_address)
+    #Get rooms lights
+    room_lights = b.get_group(room, 'lights')
+
+    #Initialize index
+    c=0
+    #Run through lights
+    for light in room_lights:
+        #Convert each element to integer
+        room_lights[c] = int(room_lights[c])
+        if light[0] == light[-1]:
+            c += 1
+
+    #Get all lights
+    lights = access_lights()
+
+    #Turn on each light in the room
     for light in lights:
-        lights[light].on = True
-        lights[light].hue = 7000
-        lights[light].saturation = 100
-
-
-def danger_mode():
-    lights = access_lights(bridge_ip_address)
-    while True:
-        time.sleep(1)
-        for light in lights:
+        if light in room_lights:
             lights[light].on = True
-            lights[light].hue = 180
-            lights[light].saturation = 100
-        time.sleep(1)
-        for light in lights:
-            lights[light].on = True
-            lights[light].hue = 7000
-            lights[light].saturation = 100
+            lights[light].brightness = 255

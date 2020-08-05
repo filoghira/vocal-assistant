@@ -1,4 +1,4 @@
-from hueLights import *
+import hueLights as lights
 from const import *
 from exceptions import *
 import os
@@ -116,6 +116,8 @@ def elaborate(text, auth_state, key, mixer):
         musicPlayer.resume(mixer[0])
     elif text in stop_music:
         musicPlayer.stop(mixer[0],mixer[1])
+    elif text in turn_on_light_room:
+        lights.turn_on_room()
     #Do nothing
     elif text in cancel:
         print("Ok, come non detto")
