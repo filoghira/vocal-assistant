@@ -9,7 +9,7 @@ import youtube
 import time
 import pyttsx3 as speech
 
-def login(auth_state, key):
+def login(auth_state, key, voice):
     #Defining the audio source
     recognizer = sr.Recognizer()
     microphone = sr.Microphone()
@@ -26,7 +26,8 @@ def login(auth_state, key):
     while True:
         #Input
         with microphone as source:
-            print("Nome utente: ")
+            voice.say("Dimmi il tuo username")
+            voice.runAndWait()
             audio = recognizer.listen(source, phrase_time_limit = 5)
 
         #Try recognize
@@ -35,16 +36,18 @@ def login(auth_state, key):
             break
         #No audio
         except sr.UnknownValueError:
-            print("Non ho capito cosa hai detto. Prova a ripetere.")
+            voice.say("Non ho capito cosa hai detto. Prova a ripetere.")
+            voice.runAndWait()
         #Other errors
         except sr.RequestError as e:
-            print("Errore mentre provo a riconoscere l'audio: {0}".format(e))
+            print("Error while recognizing the audio: {0}".format(e))
 
     #Get password
     while True:
         #Input
         with microphone as source:
-            print("Password: ")
+            voice.say("Dimmi la password")
+            voice.runAndWait()
             audio = recognizer.listen(source, phrase_time_limit = 5)
 
         #Try recognize
@@ -53,20 +56,21 @@ def login(auth_state, key):
             break
         #No audio
         except sr.UnknownValueError:
-            print("Non ho capito cosa hai detto. Prova a ripetere.")
+            voice.say("Non ho capito cosa hai detto. Prova a ripetere.")
+            voice.runAndWait()
         #Other errors
         except sr.RequestError as e:
-            print("Errore mentre provo a riconoscere l'audio: {0}".format(e))
+            print("Error while recognizing the audio: {0}".format(e))
 
     #Try to login
     try:
         auth_level = cr.login(username, password, key)
     except :
-        print("Login fallito")
+        voice.say("Login fallito")
     #Login successfully
     else:
         auth_state = auth_level
-        print('Login eseguito con successo. Benvenuto ' + username)
+        voice.say('Login eseguito con successo. Benvenuto ' + username)
 
     return auth_state
 
@@ -85,7 +89,7 @@ def elaborate(text, auth_state, key, mixer):
         else:
             #Try to login with higher authorization level
             print("Livello di autorizzazione insufficiente. Esegui l'accesso.")
-            auth_state = login(auth_state, key)
+            auth_state = login(auth_state, key, voice)
             if auth_state >= admin:
                 print("Spegnimento in corso...")
                 running = False
@@ -149,10 +153,11 @@ else:
     voice.say("Decrittazione completata.")
     voice.runAndWait()
 
+#Initialize
+auth_state = 0
 #First login
 if running:
-    auth_state = login(-1, key)
-    auth_state = 2
+    auth_state = login(-1, key, voice)
 
 #Main loop
 while running:
