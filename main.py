@@ -4,7 +4,10 @@ from exceptions import *
 import os
 import credenziali as cr
 import speech_recognition as sr
-import music
+import musicPlayer
+import youtube
+import time
+import pyttsx3 as speech
 
 def login(auth_state, key):
     #Defining the audio source
@@ -67,7 +70,7 @@ def login(auth_state, key):
 
     return auth_state
 
-def elaborate(text, auth_state, key):
+def elaborate(text, auth_state, key, mixer):
     #Set variables
     running = True
 
@@ -89,38 +92,67 @@ def elaborate(text, auth_state, key):
             else:
                 print("Impossibile spegnere il sistema. Autorizzazione insufficiente.")
     elif any(word in text for word in play_music):
-        play(text)
 
+        for word in play_music:
+            if word in text:
+                text = text.replace(word,' ')
+
+        text.lstrip()
+
+        link = youtube.search(text)
+
+        path = youtube.download_mp4(link)
+
+        path = youtube.convert_mp4_to_mp3(path)
+
+        mixer = [musicPlayer.play(path) , path]
+    elif text in pause_music:
+        musicPlayer.pause(mixer[0])
+    elif text in resume_music:
+        musicPlayer.resume(mixer[0])
+    elif text in stop_music:
+        musicPlayer.stop(mixer[0],mixer[1])
     #Do nothing
     elif text in cancel:
         print("Ok, come non detto")
 
-    return running, auth_state
+    return running, auth_state, mixer
 
+#Setup the loop
 running = True
-
-#Key to decrypt files
-print('Avvio del sistema.')
-key = input('Inserire chiave di decrittazione: ')
-
-try:
-    cr.tryKey(key)
-except WrongKey:
-    print('Arresto del sistema')
-    running = false
-else:
-    print('Chiave corretta. Inizializzo il sistema.')
-play("old town road")
-#First login
-#auth_state = login(-1, key)
-auth_state = 2
-
+#Initialize audio player
+mixer = {0:0}
+#Initialize text to speach
+voice = speech.init()
+#Adjusting speed rate
+voice.setProperty("rate",130)
 #Define audio source
 recognizer = sr.Recognizer()
 microphone = sr.Microphone()
 #Adjust noise
 with microphone as source:
     recognizer.adjust_for_ambient_noise(source)
+
+#Key to decrypt files
+voice.say("Avvio del sistema in corso. Inserire la chiave di decrittazione.")
+voice.runAndWait()
+key = input('--> ')
+#Test the key
+try:
+    cr.tryKey(key)
+except WrongKey:
+    #Shutdown
+    voice.say("Chiave non corretta. Spengo il sistema.")
+    voice.runAndWait()
+    running = False
+else:
+    voice.say("Decrittazione completata.")
+    voice.runAndWait()
+
+#First login
+if running:
+    auth_state = login(-1, key)
+    auth_state = 2
 
 #Main loop
 while running:
@@ -135,7 +167,8 @@ while running:
         #If the audio contains a call to the assistant
         if text in call_assistant:
 
-            print("Dimmi pure")
+            voice.say("Dimmi")
+            voice.runAndWait()
 
             done = False
 
@@ -152,22 +185,22 @@ while running:
 
                 #If there is no audio, wait for other input
                 except sr.UnknownValueError:
-                    print("Non ho capito, prova a ripetere")
+                    voice.say("Non ho capito, prova a ripetere")
 
                 #Other errors
                 except sr.RequestError as e:
-                    print("Errore mentre provo a riconoscere l'audio: {0}".format(e))
+                    print("Error while analyzing the audio: {0}".format(e))
 
                 else:
                     done = True
                     print(text)
 
             #Send the audio to the elaborate function
-            running, auth_state = elaborate(text.lower(), auth_state, key)
+            running, auth_state, mixer = elaborate(text.lower(), auth_state, key, mixer)
 
     #If there is no audio
     except sr.UnknownValueError:
-        print("Nessun input")
+        print("No input")
     #Other errors
     except sr.RequestError as e:
-        print("Errore mentre provo a riconoscere l'audio: {0}".format(e))
+        print("Error while analyzing the audio: {0}".format(e))

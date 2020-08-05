@@ -8,21 +8,21 @@ from exceptions import *
 buffer_size = 64 * 1024
 
 def tryKey(key):
-    pyAesCrypt.decryptFile("test.txt.aes", "testD.txt", key, buffer_size)
+    try:
+        pyAesCrypt.decryptFile("test.txt.aes", "testD.txt", key, buffer_size)
+    except ValueError:
+        raise WrongKey
+    else:
+        with open('testD.txt','r') as file:
+            #Get datas
+            data = file.read()
 
-    with open('testD.txt','r') as file:
-        #Get datas
-        data = file.read()
+            #Close file
+            file.close()
 
-        if data != "OK":
-            raise WrongKey
-
-        #Close file
-        file.close()
-
-    # Crypt and delete
-    pyAesCrypt.encryptFile("testD.txt", "test.txt.aes", key, buffer_size)
-    os.remove("testD.txt")
+        # Crypt and delete
+        pyAesCrypt.encryptFile("testD.txt", "test.txt.aes", key, buffer_size)
+        os.remove("testD.txt")
 
 #Add a new user
 def register(username, password, auth_level, key):
