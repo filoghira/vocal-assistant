@@ -12,21 +12,26 @@ def access_lights():
 
     return light_list
 
-def turn_on_room(room):
-    #Get bridge object
+def access_room_lights(group):
+    # Get bridge object
     b = Bridge(bridge_ip_address)
-    #Get rooms lights
-    room_lights = b.get_group(room, 'lights')
+    # Get rooms lights
+    lights = b.get_group(group, 'lights')
 
-    #Initialize index
-    c=0
-    #Run through lights
-    for light in room_lights:
-        #Convert each element to integer
-        room_lights[c] = int(room_lights[c])
+    # Initialize index
+    c = 0
+    # Run through lights
+    for light in lights:
+        # Convert each element to integer
+        lights[c] = int(lights[c])
         if light[0] == light[-1]:
             c += 1
 
+    return lights
+
+def turn_on_room(room):
+
+    room_lights = access_room_lights(room)
     #Get all lights
     lights = access_lights()
 
@@ -34,4 +39,13 @@ def turn_on_room(room):
     for light in lights:
         if light in room_lights:
             lights[light].on = True
-            lights[light].brightness = 255
+
+def turn_off_room(room):
+    room_lights = access_room_lights(room)
+    # Get all lights
+    lights = access_lights()
+
+    # Turn on each light in the room
+    for light in lights:
+        if light in room_lights:
+            lights[light].on = False

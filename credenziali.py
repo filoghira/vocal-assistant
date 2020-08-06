@@ -7,19 +7,12 @@ from exceptions import *
 
 buffer_size = 64 * 1024
 
-def tryKey(key):
+def try_key(key):
     try:
         pyAesCrypt.decryptFile("test.txt.aes", "testD.txt", key, buffer_size)
     except ValueError:
         raise WrongKey
     else:
-        with open('testD.txt','r') as file:
-            #Get datas
-            data = file.read()
-
-            #Close file
-            file.close()
-
         # Crypt and delete
         pyAesCrypt.encryptFile("testD.txt", "test.txt.aes", key, buffer_size)
         os.remove("testD.txt")
@@ -55,7 +48,7 @@ def register(username, password, auth_level, key):
     os.remove("dataout.txt")
 
 #Remove an user
-def removeUser(username, password, key):
+def remove_user(username, password, key):
     #Set variables
     credentials = {}
 
@@ -85,8 +78,8 @@ def removeUser(username, password, key):
     #Open file and reset it
     with open('dataout.txt', 'w') as file:
         #Update credentials
-        for user in credentials:
-            file.write(username + ' ' + password)
+        for username in credentials:
+            file.write(username + ' ' + credentials[username])
         #Close file
         file.close()
 
@@ -97,7 +90,7 @@ def removeUser(username, password, key):
     return result
 
 #Reset the credentials
-def resetFile(key):
+def reset_file(key):
 
     file = open('dataout.txt', 'w+')
     file.close()
@@ -123,10 +116,10 @@ def login(username, password, key):
 
         #If username wrong password correct
         if username not in credentials:
-            raise UserNotFound
+            raise UserNotFound(username)
         # If username correct password wrong
         if credentials[username] != password:
-            raise WrongPassword
+            raise WrongPassword(password)
         #Everything correct
         else:
             auth_level = auth_level_read

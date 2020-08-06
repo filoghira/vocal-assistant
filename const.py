@@ -16,7 +16,4 @@ resume_music = ["riprendi", "riprendi musica", "riprendi la musica", "riavvia mu
 stop_music = ["interrompi", "interrompi musica", "interrompi la musica", "stop", "stop musica", "stop alla musica", "ferma", "ferma musica", "ferma la musica"]
 
 #Authorization level
-not_registered = -1
-user = 0
-admin  = 1
-master = 2
+auth_levels = {-1 : 'Ospite', 0 : 'Utente generico', 1 : 'Admin', 2 : 'Super utente', 'Ospite' : -1, 'Utente generico' : 0, 'Admin' : 1, 'Super user' : 2}
