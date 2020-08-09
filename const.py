@@ -1,12 +1,17 @@
-name = "test"
+import settings
+
+name = settings.get_setting("assistant_name")
 
 #Lights
 turn_on_light_room = ["accendi la luce in", "accendi luce in", "accendi stanza", "accendi la stanza", "accendi la luce nella stanza"]
 turn_off_light_room = ["spegni la luce in", "spegni luce in", "spegni stabza", "spegni la stanza", "spegni la luce nella stanza"]
+turn_on_light = ["accendi dispositivo", "accendi il dispositivo"]
+turn_on = ["accendi la luce", "accendi luce", "accendi luci"]
+turn_off = ["spegni la luce", "spegni luce", "spegni luci"]
 
 #Chat
 call_assistant = ["ehi " + name, "ciao " + name, "buongiorno " + name, name, "ok " + name, "buonasera " + name, "buon pomeriggio " + name]
-turn_off = ["disattiva il sistema", "spegni il sistema", "spegniti", "vai a dormire", "ritorna nella pokeball"]
+shutdown = ["disattiva il sistema", "spegni il sistema", "spegniti", "vai a dormire", "ritorna nella pokeball"]
 hello = ["ciao"]
 cancel = ["annulla", "non importa", "no", "scherzavo"]
 

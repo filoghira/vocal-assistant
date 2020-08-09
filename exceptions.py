@@ -34,3 +34,12 @@ class RoomNotFound(Exception):
 
     def __str__(self):
         return  f'{self.room} -> {self.message}'
+
+class SettingNotFound(Exception):
+    def __init__(self, setting, message="Setting does not exist"):
+        self.setting = setting
+        self.message = message
+        super().__init__(self.message)
+
+    def __str__(self):
+        return f'{self.setting} -> {self.message}'

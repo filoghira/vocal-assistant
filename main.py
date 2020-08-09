@@ -8,6 +8,7 @@ import musicPlayer
 import youtube
 import time
 import pyttsx3 as speech
+import settings
 
 def login(auth_state, key, voice):
     #Defining the audio source
@@ -82,7 +83,7 @@ def elaborate(text, auth_state, key, mixer, voice):
     #Every possible command
 
     #Stop the program
-    if text in turn_off:
+    if text in shutdown:
         #If the user has enough authorization
         if auth_state >= auth_levels['Admin']:
             voice.say("Spegnimento in corso")
@@ -100,6 +101,7 @@ def elaborate(text, auth_state, key, mixer, voice):
             else:
                 voice.say("Impossibile spegnere il sistema. Livello di autorizzazione insufficiente.")
                 voice.runAndWait()
+    #Play a song
     elif any(word in text for word in play_music):
 
         for word in play_music:
@@ -115,12 +117,16 @@ def elaborate(text, auth_state, key, mixer, voice):
         path = youtube.convert_mp4_to_mp3(path)
 
         mixer = [musicPlayer.play(path) , path]
+    #Pause the song
     elif text in pause_music:
         musicPlayer.pause(mixer[0])
+    #Resume the song
     elif text in resume_music:
         musicPlayer.resume(mixer[0])
+    #Stop the song
     elif text in stop_music:
         musicPlayer.stop(mixer[0],mixer[1])
+    #Turn on all lights in a room
     elif any(word in text for word in turn_on_light_room):
 
         for word in turn_on_light_room:
@@ -135,6 +141,7 @@ def elaborate(text, auth_state, key, mixer, voice):
         else:
             voice.say("Fatto")
             voice.runAndWait()
+    #Turn off all lights in a room
     elif any(word in text for word in turn_off_light_room):
 
         for word in turn_off_light_room:
@@ -143,6 +150,32 @@ def elaborate(text, auth_state, key, mixer, voice):
 
         try:
             Lights.turn_off_room(text)
+        except RoomNotFound:
+            voice.say("Impossibile trovare la stanza.")
+            voice.runAndWait()
+        else:
+            voice.say("Fatto")
+            voice.runAndWait()
+    #Turn on lights in the default room
+    elif text.lower() == turn_on:
+
+        room = setting.get_setting("lights_room")
+
+        try:
+            Lights.turn_on_room(room)
+        except RoomNotFound:
+            voice.say("Impossibile trovare la stanza.")
+            voice.runAndWait()
+        else:
+            voice.say("Fatto")
+            voice.runAndWait()
+    #Turn off lights in the default room
+    elif text.lower() == turn_off:
+
+        room = setting.get_setting("lights_room")
+
+        try:
+            Lights.turn_off_room(room)
         except RoomNotFound:
             voice.say("Impossibile trovare la stanza.")
             voice.runAndWait()
@@ -159,18 +192,31 @@ def elaborate(text, auth_state, key, mixer, voice):
 def main():
     #Setup the loop
     running = True
+
     #Initialize audio player
     mixer = {0:0}
+
     #Initialize text to speach
     voice = speech.init()
     #Adjusting speed rate
-    voice.setProperty("rate",130)
+    try:
+        voice.setProperty("rate",settings.get_setting("speech_rate"))
+    except SettingNotFound:
+        print("Can't set speech rate. Setting to default (130).")
+        voice.setProperty("rate",130)
+    try:
+        voice.setProperty("volume",settings.get_setting("speech_volume"))
+    except SettingNotFound:
+        print("Can't set speech volume. Setting to default (1).")
+        voice.setProperty("volume",1)
+
     #Define audio source
     recognizer = sr.Recognizer()
     microphone = sr.Microphone()
     #Adjust noise
     with microphone as source:
         recognizer.adjust_for_ambient_noise(source)
+
 
     #Key to decrypt files
     voice.say("Avvio del sistema in corso. Inserire la chiave di decrittazione.")
