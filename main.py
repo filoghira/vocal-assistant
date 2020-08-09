@@ -94,7 +94,7 @@ def elaborate(text, auth_state, key, mixer, voice):
             voice.say("Livello di autorizzazione insufficiente. Esegui l'accesso.")
             voice.runAndWait()
             auth_state = login(auth_state, key, voice)
-            if auth_state >= admin:
+            if auth_state >= auth_levels['Admin']:
                 voice.say("Spegnimento in corso")
                 voice.runAndWait()
                 running = False
@@ -157,7 +157,7 @@ def elaborate(text, auth_state, key, mixer, voice):
             voice.say("Fatto")
             voice.runAndWait()
     #Turn on lights in the default room
-    elif text.lower() == turn_on:
+    elif text == turn_on:
 
         room = setting.get_setting("lights_room")
 
@@ -170,7 +170,7 @@ def elaborate(text, auth_state, key, mixer, voice):
             voice.say("Fatto")
             voice.runAndWait()
     #Turn off lights in the default room
-    elif text.lower() == turn_off:
+    elif text == turn_off:
 
         room = setting.get_setting("lights_room")
 
@@ -182,6 +182,37 @@ def elaborate(text, auth_state, key, mixer, voice):
         else:
             voice.say("Fatto")
             voice.runAndWait()
+    #Change a setting
+    elif text in set_setting:
+
+        #Check authorization level
+        if auth_state >= auth_levels['Utente generico']:
+            settings.change_setting(voice)
+        else:
+            # Try to login with higher authorization level
+            voice.say("Livello di autorizzazione insufficiente. Esegui l'accesso.")
+            voice.runAndWait()
+            auth_state = login(auth_state, key, voice)
+            if auth_state >= auth_levels['Utente generico']:
+                settings.change_setting(voice)
+            else:
+                voice.say("Impossibile modificare le impostazioni. Livello di autorizzazione insufficiente.")
+                voice.runAndWait()
+    #Reset settings
+    elif text in reset_settings:
+        # Check authorization level
+        if auth_state >= auth_levels['Admin']:
+            settings.reset_to_default(voice)
+        else:
+            # Try to login with higher authorization level
+            voice.say("Livello di autorizzazione insufficiente. Esegui l'accesso.")
+            voice.runAndWait()
+            auth_state = login(auth_state, key, voice)
+            if auth_state >= auth_levels['Admin']:
+                settings.reset_to_default(voice)
+            else:
+                voice.say("Impossibile resettare le impostazioni. Livello di autorizzazione insufficiente.")
+                voice.runAndWait()
     #Do nothing
     elif text in cancel:
         voice.say("Come non detto")
@@ -200,12 +231,12 @@ def main():
     voice = speech.init()
     #Adjusting speed rate
     try:
-        voice.setProperty("rate",settings.get_setting("speech_rate"))
+        voice.setProperty("rate",int(settings.get_setting("speech_rate")))
     except SettingNotFound:
         print("Can't set speech rate. Setting to default (130).")
         voice.setProperty("rate",130)
     try:
-        voice.setProperty("volume",settings.get_setting("speech_volume"))
+        voice.setProperty("volume",int(settings.get_setting("speech_volume")))
     except SettingNotFound:
         print("Can't set speech volume. Setting to default (1).")
         voice.setProperty("volume",1)

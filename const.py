@@ -23,3 +23,7 @@ stop_music = ["interrompi", "interrompi musica", "interrompi la musica", "stop",
 
 #Authorization level
 auth_levels = {-1 : 'Ospite', 0 : 'Utente generico', 1 : 'Admin', 2 : 'Super utente', 'Ospite' : -1, 'Utente generico' : 0, 'Admin' : 1, 'Super user' : 2}
+
+#Settings management
+set_setting = [ "configura le impostazioni", "imposta le impostazioni", "modifica le impostazioni", "cambia le impostazioni", "aggiorna le impostazioni", "configura impostazioni", "imposta impostazioni", "modifica impostazioni", "cambia impostazioni", "aggiorna impostazioni"]
+reset_settings = [ "reimposta le impostazioni", "resetta le impostazioni", "ripristina le impostazioni"]
