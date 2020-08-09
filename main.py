@@ -2,7 +2,7 @@ import hueLights as Lights
 from const import *
 from exceptions import *
 import os
-import credenziali as cr
+import crypt as cr
 import speech_recognition as sr
 import musicPlayer
 import youtube
@@ -71,10 +71,11 @@ def login(auth_state, key, voice):
     else:
         auth_state = auth_level
         voice.say('Login eseguito con successo. Benvenuto ' + username)
+        voice.runAndWait()
 
     return auth_state
 
-def elaborate(text, auth_state, key, mixer):
+def elaborate(text, auth_state, key, mixer, voice):
     #Set variables
     running = True
 
@@ -84,17 +85,21 @@ def elaborate(text, auth_state, key, mixer):
     if text in turn_off:
         #If the user has enough authorization
         if auth_state >= auth_levels['Admin']:
-            print("Spegnimento in corso...")
+            voice.say("Spegnimento in corso")
+            voice.runAndWait()
             running = False
         else:
             #Try to login with higher authorization level
-            print("Livello di autorizzazione insufficiente. Esegui l'accesso.")
+            voice.say("Livello di autorizzazione insufficiente. Esegui l'accesso.")
+            voice.runAndWait()
             auth_state = login(auth_state, key, voice)
             if auth_state >= admin:
-                print("Spegnimento in corso...")
+                voice.say("Spegnimento in corso")
+                voice.runAndWait()
                 running = False
             else:
-                print("Impossibile spegnere il sistema. Autorizzazione insufficiente.")
+                voice.say("Impossibile spegnere il sistema. Livello di autorizzazione insufficiente.")
+                voice.runAndWait()
     elif any(word in text for word in play_music):
 
         for word in play_music:
@@ -116,16 +121,38 @@ def elaborate(text, auth_state, key, mixer):
         musicPlayer.resume(mixer[0])
     elif text in stop_music:
         musicPlayer.stop(mixer[0],mixer[1])
-    elif any(word in text for word in turn_on_lightroom):
+    elif any(word in text for word in turn_on_light_room):
 
-        for word in turn_on_lightroom:
+        for word in turn_on_light_room:
             if word in text:
                 text = text.replace(word,' ')
 
-        Lights.turn_on_room(text)
+        try:
+            Lights.turn_on_room(text)
+        except RoomNotFound:
+            voice.say("Impossibile trovare la stanza.")
+            voice.runAndWait()
+        else:
+            voice.say("Fatto")
+            voice.runAndWait()
+    elif any(word in text for word in turn_off_light_room):
+
+        for word in turn_off_light_room:
+            if word in text:
+                text = text.replace(word,' ')
+
+        try:
+            Lights.turn_off_room(text)
+        except RoomNotFound:
+            voice.say("Impossibile trovare la stanza.")
+            voice.runAndWait()
+        else:
+            voice.say("Fatto")
+            voice.runAndWait()
     #Do nothing
     elif text in cancel:
-        print("Ok, come non detto")
+        voice.say("Come non detto")
+        voice.runAndWait()
 
     return running, auth_state, mixer
 
@@ -209,7 +236,7 @@ def main():
                         print(text)
 
                 #Send the audio to the elaborate function
-                running, auth_state, mixer = elaborate(text.lower(), auth_state, key, mixer)
+                running, auth_state, mixer = elaborate(text.lower(), auth_state, key, mixer, voice)
 
         #If there is no audio
         except sr.UnknownValueError:

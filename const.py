@@ -1,7 +1,8 @@
 name = "test"
 
 #Lights
-turn_on_light_room = ["accendi la luce", "accendi luce", "accendi stanza", "accendi la luce nella stanza"]
+turn_on_light_room = ["accendi la luce in", "accendi luce in", "accendi stanza", "accendi la stanza", "accendi la luce nella stanza"]
+turn_off_light_room = ["spegni la luce in", "spegni luce in", "spegni stabza", "spegni la stanza", "spegni la luce nella stanza"]
 
 #Chat
 call_assistant = ["ehi " + name, "ciao " + name, "buongiorno " + name, name, "ok " + name, "buonasera " + name, "buon pomeriggio " + name]

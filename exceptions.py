@@ -25,3 +25,12 @@ class WrongKey(Exception):
     def __init__(self, message="Wrong decryption key"):
         self.message = message
         super().__init__(self.message)
+
+class RoomNotFound(Exception):
+    def __init__(self, room, message="Room not found"):
+        self.room = room
+        self.message = message
+        super().__init__(self.message)
+
+    def __str__(self):
+        return  f'{self.room} -> {self.message}'
