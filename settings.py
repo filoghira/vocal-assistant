@@ -9,7 +9,7 @@ from exceptions import *
 def get_setting(setting):
 
     #Get the setting
-    file = open("/settings/settings.json", "r")
+    file = open("settings/settings.json", "r")
 
     data = json.load(file)
 
@@ -28,7 +28,7 @@ def get_setting(setting):
 def set_setting(setting, value):
 
     #Get all settings
-    file = open("/settings/settings.json", "r")
+    file = open("settings/settings.json", "r")
     data = json.load(file)
     file.close()
 
@@ -37,7 +37,7 @@ def set_setting(setting, value):
         #Update the setting
         data[setting] = value
 
-        file = open("/settings/settings.json", "w")
+        file = open("settings/settings.json", "w")
         # noinspection PyTypeChecker
         json.dump(data,"")
         file.close()
@@ -145,17 +145,17 @@ def do_backup():
     date_time = now.strftime("%d_%m_%Y_%H_%M_%S")
 
     #Create backup
-    shutil.move("/settings/settings.json", "/settings/backups/settings_" + backup_count + "_" + datetime + ".json.backup")
+    shutil.move("settings/settings.json", "settings/backups/settings_" + backup_count + "_" + datetime + ".json.backup")
 
 #Reset settings to default values
 def reset_settings():
 
     #Delete the old settings file
-    if os.path.isfile("/settings/settings.json"):
-        os.remove("/settings/settings.json")
+    if os.path.isfile("settings/settings.json"):
+        os.remove("settings/settings.json")
 
     #Copy the default backup
-    shutil.copy("/settings/settings_default.json.backup", "/settings/settings.json")
+    shutil.copy("settings/settings_default.json.backup", "settings/settings.json")
 
 #Change settings to default value
 def reset_to_default(voice):

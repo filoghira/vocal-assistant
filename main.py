@@ -1,12 +1,10 @@
 import hueLights as Lights
 from const import *
 from exceptions import *
-import os
 import crypt as cr
 import speech_recognition as sr
 import musicPlayer
 import youtube
-import time
 import pyttsx3 as speech
 import settings
 

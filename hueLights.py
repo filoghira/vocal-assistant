@@ -1,5 +1,4 @@
 from phue import Bridge
-import time
 from exceptions import *
 
 #Bridge ip address
